@@ -10,15 +10,12 @@ import requests
 import uvicorn
 
 
-# =========================================================
-# MODEL
-# =========================================================
-
-FEATURES = ["temperature", "humidity", "noise_level"]
-
+# model definition
+features = ["temperature", "humidity", "noise_level"]
 model = IForest(contamination=0.05, random_state=42)
 
 
+# data normal
 def normal_sample():
     return {
         "temperature": random.normalvariate(70, 2),
@@ -26,7 +23,7 @@ def normal_sample():
         "noise_level": random.normalvariate(30, 2),
     }
 
-
+# data anomaly
 def anomaly_sample():
     return {
         "temperature": random.normalvariate(85, 2),
@@ -34,31 +31,28 @@ def anomaly_sample():
         "noise_level": random.normalvariate(55, 2),
     }
 
-
+# train model with 300 normal data points
 def train_model():
     X = [list(normal_sample().values()) for _ in range(300)]
 
     model.fit(np.array(X))
 
-    print("✅ Model trained")
+    print("Model trained - Starting API to Start Stream")
 
 
-# =========================================================
-# PREDICTION ENDPOINT
-# =========================================================
+#prediction
+def predict_one(data: dict):
 
-def predict_sample(data: dict):
-
-    x = np.array([[data[f] for f in FEATURES]])
+    x = np.array([[data[f] for f in features]])
 
     pred = model.predict(x)[0]
 
-    return "ANOMALY" if pred == 1 else "NORMAL"
+    label = "ANOMALY" if pred == 1 else "NORMAL"
 
+    
+    return label
 
-# =========================================================
-# STREAM LOOP - constantly sending streamdata to endpoint
-# =========================================================
+#stream sensor data to /predict
 
 def stream_loop():
 
@@ -96,9 +90,7 @@ def stream_loop():
         time.sleep(0.5)
 
 
-# =========================================================
-# LIFESPAN
-# =========================================================
+#lifespan - manages FastAPI
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -112,40 +104,31 @@ async def lifespan(app: FastAPI):
 
     thread.start()
 
-    print("🚀 Stream started")
+    print("Stream started")
 
     yield
 
-    print("🛑 Shutting down")
+    print("Shutting down")
 
 
-# =========================================================
-# FASTAPI
-# =========================================================
-
+#FastAPI
 app = FastAPI(lifespan=lifespan)
 
 
+#when /predict is requested, run predict
 @app.post("/predict")
 def predict(data: dict):
 
-    label = predict_sample(data)
+    label = predict_one(data)
 
     return {
         "prediction": label
     }
 
 
-@app.get("/")
-def root():
-    return {
-        "status": "running"  
-    }
 
 
-# =========================================================
-# RUN DIRECTLY
-# =========================================================
+#run all, STRG C to stop
 
 if __name__ == "__main__":
 
@@ -153,4 +136,5 @@ if __name__ == "__main__":
         app,
         host="127.0.0.1",
         port=8000,
+        log_level="warning" 
     )
