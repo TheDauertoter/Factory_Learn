@@ -31,10 +31,10 @@ python pure_model.py
 Runs the complete IoT anomaly detection pipeline.
 
 **Features:**
-- Simulates IoT sensor data as a continuous data stream.
-- Sends incoming sensor data to the prediction service.
-- Performs real-time anomaly detection using the trained model.
-- Continuously outputs predictions until stopped.
+- Simulates IoT sensor data as a continuous data stream
+- Sends incoming sensor data to the prediction service
+- Performs real-time anomaly detection using the trained model
+- Continuously outputs predictions until stopped
 
 **Usage:**
 
