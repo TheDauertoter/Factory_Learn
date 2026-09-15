@@ -1,4 +1,5 @@
 import random
+
 import numpy as np
 from pyod.models.iforest import IForest
 
@@ -13,9 +14,9 @@ def normal():
 
 def anomaly():
     return [
-        random.normalvariate(85, 2),
-        random.normalvariate(45, 3),
-        random.normalvariate(55, 2),
+        random.normalvariate(75, 2),
+        random.normalvariate(50, 3),
+        random.normalvariate(36,2),
     ]
 
 # model and training
@@ -24,7 +25,7 @@ model = IForest(contamination=0.05, random_state=42)
 X_train = [normal() for _ in range(300)]
 model.fit(np.array(X_train))
 
-# stream data into model after training
+# test model after training for evaluation
 
 y_true = []
 y_pred = []
@@ -75,7 +76,7 @@ precision = TP / (TP + FP + 1e-9)
 recall = TP / (TP + FN + 1e-9)
 
 
-print("\n================ FINAL MODEL STATS ================\n")
+print("\n***** Stats *****")
 
 print(f"Accuracy:  {accuracy:.3f}")
 print(f"Precision: {precision:.3f}")
