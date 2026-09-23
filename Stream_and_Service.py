@@ -10,6 +10,7 @@ from fastapi import FastAPI
 from pyod.models.iforest import IForest
 
 
+
 # model definition
 features = ["temperature", "humidity", "noise_level"]
 
@@ -22,9 +23,9 @@ model = IForest(
 # generate normal sensor data
 def normal_sample():
     return {
-        "temperature": random.normalvariate(70, 2),
-        "humidity": random.normalvariate(60, 3),
-        "noise_level": random.normalvariate(30, 2),
+        "temperature": random.normalvariate(70, 1),
+        "humidity": random.normalvariate(60, 1),
+        "noise_level": random.normalvariate(30, 1),
     }
 
 
@@ -75,7 +76,7 @@ def stream_loop():
             )
 
             result = r.json()
-
+            # print sensor data and prediction
             print(
                 f"T={data['temperature']:.1f} "
                 f"H={data['humidity']:.1f} "
@@ -86,7 +87,7 @@ def stream_loop():
         except requests.RequestException as e:
             print("Request failed:", e)
 
-        time.sleep(0.5)
+        time.sleep(0.01)
 
 
 # lifespan - manages FastAPI from start to end
