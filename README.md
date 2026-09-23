@@ -1,32 +1,14 @@
 # UI Course DLBDSMTP01 – Project: From Model to Production
 
 ## Task 1: Anomaly Detection in an IoT Setting
-**Focus:** Stream Processing
-
-This repository contains the implementation of an anomaly detection pipeline for an IoT scenario using an **Isolation Forest** model. It includes both a standalone machine learning evaluation and a stream-processing simulation with a prediction service.
 
 ---
 
-## Repository Structure
+## Python Files
 
-### `pure_model.py`
 
-Standalone implementation for training and evaluating the machine learning model.
 
-**Features:**
-- Trains an **Isolation Forest** on **300 training samples**
-- Evaluates the trained model on **600 labeled test samples**
-- Prints  evaluation metrics 
-
-**Usage:**
-
-```bash
-python pure_model.py
-```
-
----
-
-### `run_all.py`
+### `Stream_and_Service`
 
 Runs the complete IoT anomaly detection pipeline.
 
@@ -39,7 +21,7 @@ Runs the complete IoT anomaly detection pipeline.
 **Usage:**
 
 ```bash
-python run_all.py
+python Stream_and_Servic.py
 ```
 
 Stop the application at any time using:
