@@ -9,12 +9,17 @@ import uvicorn
 from fastapi import FastAPI
 from pyod.models.iforest import IForest
 
+
 # model definition
 features = ["temperature", "humidity", "noise_level"]
-model = IForest(contamination=0.05, random_state=42)
+
+model = IForest(
+    contamination=0.05,
+    random_state=42
+)
 
 
-# data normal
+# generate normal sensor data
 def normal_sample():
     return {
         "temperature": random.normalvariate(70, 2),
@@ -22,17 +27,14 @@ def normal_sample():
         "noise_level": random.normalvariate(30, 2),
     }
 
-# data anomaly
-def anomaly_sample():
-    return {
-        "temperature": random.normalvariate(75, 2),
-        "humidity": random.normalvariate(50, 3),
-        "noise_level": random.normalvariate(36, 2),
-    }
 
 # train model with 300 normal data points
 def train_model():
-    X = [list(normal_sample().values()) for _ in range(300)]
+
+    X = [
+        list(normal_sample().values())
+        for _ in range(300)
+    ]
 
     model.fit(np.array(X))
 
@@ -42,14 +44,16 @@ def train_model():
 # prediction
 def predict_one(data: dict):
 
-    x = np.array([[data[f] for f in features]])
+    x = np.array([
+        [data[f] for f in features]
+    ])
 
     pred = model.predict(x)[0]
 
     label = "ANOMALY" if pred == 1 else "NORMAL"
 
-    
     return label
+
 
 # stream sensor data to /predict
 def stream_loop():
@@ -59,11 +63,8 @@ def stream_loop():
 
     while True:
 
-        data = (
-            anomaly_sample()
-            if random.random() < 0.1
-            else normal_sample()
-        )
+        # generate sensor data
+        data = normal_sample()
 
         try:
 
@@ -82,10 +83,10 @@ def stream_loop():
                 f"-> {result['prediction']}"
             )
 
-        except requests.RequestException as e: #catch request errors
+        except requests.RequestException as e:
             print("Request failed:", e)
 
-        time.sleep(0.5) #for readabilty 
+        time.sleep(0.5)
 
 
 # lifespan - manages FastAPI from start to end
@@ -108,11 +109,11 @@ async def lifespan(app: FastAPI):
     print("Shutting down")
 
 
-#FastAPI
+# FastAPI
 app = FastAPI(lifespan=lifespan)
 
 
-# when /predict is requested, run predict - Model as Service
+# Model as a Service
 @app.post("/predict")
 def predict(data: dict):
 
@@ -123,14 +124,12 @@ def predict(data: dict):
     }
 
 
-
-
-# run all, STRG C to stop
+# run all, CTRL+C to stop
 if __name__ == "__main__":
 
     uvicorn.run(
         app,
         host="127.0.0.1",
         port=8000,
-        log_level="warning" 
+        log_level="warning"
     )
