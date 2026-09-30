@@ -30,6 +30,16 @@ Stop the application at any time using:
 Ctrl + C
 ```
 
+### `Evaluation.py`
+
+Runs 25 Performance Tests for the HST Model and outputs Average Metrics
+
+**Usage:**
+
+```bash
+python Evaluation.py
+```
+
 ---
 
 ## Requirements
